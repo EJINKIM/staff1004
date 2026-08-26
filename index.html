@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>토유 오픈·마감 보고 도우미</title>
+<style>
+  :root{
+    --bg:#f5f7fb; --card:#fff; --text:#172033; --muted:#6b7280; --line:#e5e7eb;
+    --accent:#3558e6; --accent-soft:#eef2ff; --ok:#16845b; --warn:#b86a00; --danger:#b42318;
+    --shadow:0 10px 30px rgba(23,32,51,.08); --radius:20px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+  button,input{font:inherit}
+  .app{max-width:1180px;margin:0 auto;padding:20px 16px 80px}
+  .hero{position:sticky;top:0;z-index:20;background:rgba(245,247,251,.93);backdrop-filter:blur(14px);padding:10px 0 14px}
+  .hero-inner{background:linear-gradient(135deg,#172033,#31476f);color:white;border-radius:24px;padding:18px 20px;box-shadow:var(--shadow)}
+  .hero-top{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+  h1{font-size:22px;margin:0 0 4px}.sub{opacity:.78;font-size:13px}
+  .progress-wrap{min-width:220px;flex:1;max-width:380px}
+  .progress-head{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}
+  .progress{height:9px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden}
+  .progress > i{display:block;height:100%;width:0;background:#fff;border-radius:999px;transition:.25s}
+  .top-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .btn{border:0;border-radius:12px;padding:10px 13px;font-weight:700;cursor:pointer}
+  .btn.primary{background:white;color:#172033}.btn.ghost{background:rgba(255,255,255,.12);color:#fff}
+  .btn.soft{background:var(--accent-soft);color:#3047bd}.btn.danger{background:#fff0ee;color:var(--danger)}
+  .grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card-head{padding:18px 18px 12px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+  .title{font-weight:900;font-size:18px}.desc{color:var(--muted);font-size:13px;margin-top:4px}
+  .status{font-size:12px;padding:7px 10px;border-radius:999px;background:#f3f4f6;color:#6b7280;white-space:nowrap}
+  .status.done{background:#eaf8f2;color:var(--ok);font-weight:800}
+  .body{padding:0 18px 18px}
+  .notice{background:#fff8e8;border:1px solid #f5d79a;border-radius:14px;padding:12px 13px;font-size:13px;line-height:1.6;margin-bottom:12px}
+  .notice strong{color:#805300}
+  .steps{margin:0;padding-left:20px;font-size:13px;line-height:1.8}
+  .upload-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .slot{border:1.5px dashed #cbd5e1;background:#fafbfc;border-radius:16px;min-height:170px;padding:10px;display:flex;flex-direction:column;gap:8px;justify-content:center;align-items:center;position:relative}
+  .slot.drag{border-color:var(--accent);background:var(--accent-soft)}
+  .slot img{max-width:100%;max-height:280px;border-radius:12px;object-fit:contain;cursor:zoom-in;background:#fff}
+  .slot .label{font-size:13px;font-weight:800;text-align:center}
+  .slot .hint{font-size:11px;color:var(--muted);text-align:center}
+  .slot-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  .mini{border:0;border-radius:10px;padding:7px 9px;font-size:12px;font-weight:700;cursor:pointer;background:#eef2f7;color:#334155}
+  .mini.danger{background:#fff0ee;color:var(--danger)}
+  .fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  label.field{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}
+  .field input{border:1px solid #d8dee8;border-radius:12px;padding:11px 12px;background:#fff;color:var(--text);outline:none}
+  .field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,88,230,.10)}
+  .text-output{margin-top:12px;background:#111827;color:#f9fafb;border-radius:16px;padding:14px;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;line-height:1.7;min-height:140px}
+  .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .checklist{display:grid;gap:8px;margin:4px 0 14px}
+  .checkline{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.55}
+  .checkline input{margin-top:4px}
+  .reg-list{display:grid;gap:12px}
+  .adder{margin-top:10px}
+  .error{color:var(--danger);font-size:12px;font-weight:700;margin-top:8px}
+  .okmsg{color:var(--ok);font-size:12px;font-weight:700;margin-top:8px}
+  .history{margin-top:14px;display:none}
+  .history.show{display:block}
+  .history-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .report{display:none;margin-top:18px}
+  .report.show{display:block}
+  .report-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .report-card h3{margin:0 0 10px;font-size:16px}
+  .report-card img{max-width:100%;display:block;margin:8px auto;border-radius:12px;border:1px solid var(--line)}
+  .report-text{white-space:pre-wrap;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;line-height:1.7}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;z-index:100;align-items:center;justify-content:center;padding:20px}
+  .modal.show{display:flex}.modal img{max-width:96vw;max-height:90vh;object-fit:contain;border-radius:14px;background:#fff}
+  .modal button{position:absolute;top:18px;right:18px;border:0;border-radius:999px;width:40px;height:40px;font-size:20px;cursor:pointer}
+  .confirm{position:fixed;inset:0;background:rgba(17,24,39,.55);display:none;z-index:90;align-items:center;justify-content:center;padding:18px}
+  .confirm.show{display:flex}
+  .confirm-box{background:white;border-radius:20px;max-width:440px;width:100%;padding:20px;box-shadow:var(--shadow)}
+  .confirm-box h3{margin:0 0 8px}.confirm-box p{color:var(--muted);font-size:14px;line-height:1.6}
+  .confirm-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+  @media (max-width:760px){
+    .upload-grid,.fields{grid-template-columns:1fr}
+    .hero{position:static}
+    .slot{min-height:150px}
+    .app{padding:12px 10px 60px}
+  }
+  @media print{
+    body{background:#fff}.hero,.grid,#historyPanel,.report .row-actions{display:none!important}
+    .report{display:block!important}.report-card{box-shadow:none;break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-top">
+        <div>
+          <h1>토유 오픈·마감 보고 도우미</h1>
+          <div class="sub" id="todayLabel"></div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-head"><span>진행률</span><strong id="progressText">0 / 12 완료</strong></div>
+          <div class="progress"><i id="progressBar"></i></div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn primary" id="makeReport">최종 보고 만들기</button>
+        <button class="btn ghost" id="toggleHistory">날짜별 저장 기록</button>
+        <button class="btn ghost" onclick="window.print()">인쇄 / PDF</button>
+        <button class="btn ghost" id="resetToday">오늘 업무 초기화</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="history" id="historyPanel"></div>
+
+  <div class="grid">
+    <section class="card" data-step="1">
+      <div class="card-head"><div><div class="title">① 매출 올리기 (토유 레스토랑)</div><div class="desc">매출 화면 사진 1장</div></div><span class="status">미완료</span></div>
+      <div class="body">
+        <div class="upload-grid"><div class="slot" data-slot="sales1"></div></div>
+      </div>
+    </section>
+
+    <section class="card" data-step="2">
+      <div class="card-head"><div><div class="title">② 현금 매출 TEXT 입력</div><div class="desc">① 사진을 보면서 숫자만 입력</div></div><span class="status">미완료</span></div>
+      <div class="body">
+        <div id="salesRef" class="notice"><strong>① 사진 참고:</strong> 매출 사진을 올리면 여기에 미리보기가 표시됩니다.</div>
+        <div class="fields" id="salesFields">
+          <label class="field">현금<input inputmode="numeric" data-k="cash" placeholder="140000"></label>
+          <label class="field">카드<input inputmode="numeric" data-k="card" placeholder="426000"></label>
+          <label class="field">서비스<input inputmode="numeric" data-k="service" placeholder="33000"></label>
+          <label class="field">순매출<input inputmode="numeric" data-k="net" placeholder="566000"></label>
+          <label class="field">총매출<input inputmode="numeric" data-k="total" placeholder="599000"></label>
+          <label class="field">현 시재금<input inputmode="numeric" data-k="cashOnHand" placeholder="200000"></label>
+          <label class="field">현 포스기 현금잔액<input inputmode="numeric" data-k="posCash" placeholder="572900"></label>
+          <label class="field"><span id="monthCashLabel">월 누적현금</span><input inputmode="numeric" data-k="monthCash" placeholder="0"></label>
+          <label class="field">계좌입금<input inputmode="numeric" data-k="deposit" placeholder="0"></label>
+        </div>
+        <div class="text-output" id="salesText"></div>
+        <div class="row-actions"><button class="btn soft" data-copy="salesText">TEXT 복사</button></div>
+      </div>
+    </section>
+
+    <section class="card" data-step="3">
+      <div class="card-head"><div><div class="title">③ 일일 예약시트</div><div class="desc">검토 후 오늘자·내일자 완성 시트 각각 캡처</div></div><span class="status">미완료</span></div>
+      <div class="body">
+        <div class="notice"><strong>⚠ 캡처 전 필수 확인</strong>
+          <ol class="steps">
+            <li>고객 국적 표기가 정확한지 확인</li>
+            <li>고객별 조식정보 확인</li>
+            <li>검토·수정이 끝난 <strong>완성된 시트</strong>를 캡처</li>
+            <li><strong>티엘린컨 / 하드블럭 검수</strong></li>
+          </ol>
+        </div>
+        <div class="upload-grid">
+          <div class="slot" data-slot="reserveToday"></div>
+          <div class="slot" data-slot="reserveTomorrow"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" data-step="4">
+      <div class="card-head"><div><div class="title">④ 객실현황 — 내일자</div><div class="desc">내일 객실현황 화면 1장</div></div><span class="status">미완료</span></div>
+      <div class="body"><div class="upload-grid"><div class="slot" data-slot="roomTomorrow"></div></div></div>
+    </section>
+
+    <section class="card" data-step="5">
+      <div class="card-head"><div><div class="title">⑤ 조식리스트</div><div class="desc">네이버 스마트플레이스 예약 확인 후 최종 캡처</div></div><span class="status">미완료</span></div>
+      <div class="body">
+        <div class="notice"><strong>업로드 전 확인:</strong> 네이버 스마트플레이스 예약이 있으면 조식리스트 하단 <strong>프런트란</strong>에 먼저 작성합니다.</div>
+        <div class="upload-grid"><div class="slot guarded" data-slot="breakfast"></div></div>
+      </div>
+    </section>
+
+    <section class="card" data-step="6">
+      <div class="card-head"><div><div class="title">⑥ 현장결제표</div><div class="desc">최종 화면 캡처 1장</div></div><span class="status">미완료</span></div>
+      <div class="body"><div class="upload-grid"><div class="slot" data-slot="onsite"></div></div></div>
+    </section>
+
+    <section class="card" data-step="7">
+      <div class="card-head"><div><div class="title">⑦ 레지카드</div><div class="desc">개수 제한 없음 · 번호 자동 생성</div></div><span class="status">미완료</span></div>
+      <div class="body">
+        <div class="reg-list" id="regList"></div>
+        <button class="btn soft adder" id="addReg">＋ 레지카드 추가</button>
+      </div>
+    </section>
+
+    <section class="card" data-step="8">
+      <div class="card-head"><div><div class="title">⑧ 에어컨 가동 현황</div><div class="desc">체크인 전 객실만 제습 · 24℃ 설정 후 사진 2장</div></div><span class="status">미완료</span></div>
+      <div class="body">
+        <div class="notice"><strong>⚠ 체크인 전 객실만 설정</strong><br>
+          카드키 등으로 체크인 여부 재확인 → <strong>제습 모드 · 24℃</strong><br>
+          체크인한 객실은 건드리지 않기 · <strong>A룸=101호 / B룸=102호</strong>
+        </div>
+        <div class="upload-grid">
+          <div class="slot" data-slot="air1"></div>
+          <div class="slot" data-slot="air2"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" data-step="9">
+      <div class="card-head"><div><div class="title">⑨ 에르메스 객실관리</div><div class="desc">미체크인 객실 퇴실 처리 + 온돌 AUTO OFF</div></div><span class="status">미완료</span></div>
+      <div class="body">
+        <div class="notice">
+          <strong>① 미체크인 객실 퇴실 처리</strong><br>
+          해당 호실 → 숙박 → 퇴실 → 여자 사람(치마) 모양 버튼<br><br>
+          <strong>② 온돌 AUTO → OFF</strong><br>
+          해당 호실 → 하단 온도 제어 → 새 창 → 우측 상단 정지 → 확인<br><br>
+          <strong>③ 최종 확인</strong><br>
+          처리 대상 객실의 온돌이 <strong>전부 OFF</strong> 되었는지 확인
+        </div>
+        <div class="upload-grid"><div class="slot" data-slot="hermes"></div></div>
+      </div>
+    </section>
+
+    <section class="card" data-step="10">
+      <div class="card-head"><div><div class="title">⑩ 백오피스 설비 / 주방 에어컨</div><div class="desc">운영 상황에 맞게 정비 후 전체 상태 캡처</div></div><span class="status">미완료</span></div>
+      <div class="body">
+        <div class="notice">
+          <strong>중간보고 약 16:00</strong> → 101·102 제습기 <strong>ON 유지</strong><br>
+          <strong>21:00 이후</strong> → 101·102 제습기 <strong>OFF</strong><br>
+          <strong>주방 환풍기</strong> → 맨 왼쪽에서 두 번째 버튼 · 주방 업무 종료/퇴근 완료 시 OFF<br>
+          마지막에는 <strong>제습기부터 주방 에어컨까지 한 화면에 보이도록</strong> 캡처
+        </div>
+        <div class="upload-grid"><div class="slot" data-slot="backoffice"></div></div>
+      </div>
+    </section>
+
+    <section class="card" data-step="11">
+      <div class="card-head"><div><div class="title">⑪ 당일 현황 TEXT</div><div class="desc">숫자만 입력하면 고정 양식 자동 생성</div></div><span class="status">미완료</span></div>
+      <div class="body">
+        <div class="fields" id="dailyFields">
+          <label class="field">총투숙팀<input inputmode="numeric" data-k="stay" placeholder="13"></label>
+          <label class="field">연박팀<input inputmode="numeric" data-k="long" placeholder="3"></label>
+          <label class="field">신규입실팀<input inputmode="numeric" data-k="new" placeholder="10"></label>
+          <label class="field">체크인<input inputmode="numeric" data-k="in" placeholder="9"></label>
+          <label class="field">체크인전<input inputmode="numeric" data-k="before" placeholder="1"></label>
+          <label class="field">주차<input inputmode="numeric" data-k="parking" placeholder="6"></label>
+        </div>
+        <div id="dailyCheck"></div>
+        <div class="text-output" id="dailyText"></div>
+        <div class="row-actions"><button class="btn soft" data-copy="dailyText">TEXT 복사</button></div>
+      </div>
+    </section>
+
+    <section class="card" data-step="12">
+      <div class="card-head"><div><div class="title">⑫ 오픈 일지 올리기</div><div class="desc">오픈 일지 화면 캡처 1장</div></div><span class="status">미완료</span></div>
+      <div class="body"><div class="upload-grid"><div class="slot" data-slot="openlog"></div></div></div>
+    </section>
+  </div>
+
+  <section class="report" id="report">
+    <div class="report-card">
+      <h2 style="margin:0">최종 보고 모아보기</h2>
+      <div class="desc">카톡 전송 전 필요한 부분만 순서대로 확인·복사·캡처하세요.</div>
+      <div class="row-actions">
+        <button class="btn soft" onclick="window.print()">인쇄 / PDF</button>
+        <button class="btn danger" id="closeReport">보고 닫기</button>
+      </div>
+    </div>
+    <div id="reportBody"></div>
+  </section>
+</div>
+
+<div class="modal" id="imgModal"><button id="modalClose">×</button><img alt="확대 이미지"></div>
+
+<div class="confirm" id="breakfastConfirm">
+  <div class="confirm-box">
+    <h3>네이버 스마트플레이스 예약 확인하셨습니까?</h3>
+    <p>예약이 있다면 조식리스트 하단 <strong>프런트란</strong>에 먼저 작성한 뒤 최종 조식리스트를 캡처해 주세요.</p>
+    <div class="confirm-actions">
+      <button class="btn danger" id="bfNo">아직 확인 안 함</button>
+      <button class="btn soft" id="bfYes">확인했습니다</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const pad=n=>String(n).padStart(2,'0');
+  const now=new Date();
+  const dateKey=`${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
+  const tomorrow=new Date(now); tomorrow.setDate(now.getDate()+1);
+  const koDays=['일','월','화','수','목','금','토'];
+  const shortDate=d=>`${d.getMonth()+1}/${d.getDate()}`;
+  const compactDate=d=>`${String(d.getFullYear()).slice(2)}${pad(d.getMonth()+1)}${pad(d.getDate())}(${koDays[d.getDay()]})`;
+  document.getElementById('todayLabel').textContent=`${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 (${koDays[now.getDay()]})`;
+  document.getElementById('monthCashLabel').textContent=`${now.getMonth()+1}월 누적현금`;
+
+  const stateKey=`toyu_state_${dateKey}`;
+  let state=JSON.parse(localStorage.getItem(stateKey)||'{}');
+  state.sales=state.sales||{}; state.daily=state.daily||{}; state.regCount=state.regCount||1;
+  const save=()=>{ localStorage.setItem(stateKey,JSON.stringify(state)); updateProgress(); updateHistory(); };
+
+  // IndexedDB image store
+  let db;
+  const dbReq=indexedDB.open('toyu_report_db',1);
+  dbReq.onupgradeneeded=e=>{ e.target.result.createObjectStore('images'); };
+  dbReq.onsuccess=e=>{ db=e.target.result; hydrateSlots(); renderReg(); updateProgress(); };
+  const imgKey=slot=>`${dateKey}:${slot}`;
+  const putImg=(slot,blob)=>new Promise((res,rej)=>{const tx=db.transaction('images','readwrite');tx.objectStore('images').put(blob,imgKey(slot));tx.oncomplete=res;tx.onerror=rej;});
+  const getImg=slot=>new Promise(res=>{if(!db)return res(null);const r=db.transaction('images').objectStore('images').get(imgKey(slot));r.onsuccess=()=>res(r.result||null);r.onerror=()=>res(null);});
+  const delImg=slot=>new Promise(res=>{const tx=db.transaction('images','readwrite');tx.objectStore('images').delete(imgKey(slot));tx.oncomplete=res;});
+  const hasImg=slot=>getImg(slot).then(Boolean);
+
+  const labels={
+    sales1:'매출 화면', reserveToday:`오늘 ${shortDate(now)} 예약시트`, reserveTomorrow:`내일 ${shortDate(tomorrow)} 예약시트`,
+    roomTomorrow:`내일 ${shortDate(tomorrow)} 객실현황`, breakfast:'조식리스트 최종본', onsite:'현장결제표',
+    air1:'에어컨 현황 ①', air2:'에어컨 현황 ②', hermes:'에르메스 최종 화면', backoffice:'백오피스 최종 화면', openlog:'오픈 일지'
+  };
+
+  function baseSlotHTML(slot, has=false, url=''){
+    const label=labels[slot] || (slot.startsWith('reg')?`레지카드 ${slot.replace('reg','')}`:slot);
+    if(has) return `<div class="label">${label}</div><img src="${url}" alt="${label}" data-zoom><div class="slot-actions"><button class="mini replace">교체</button><button class="mini danger remove">삭제</button></div>`;
+    return `<div class="label">${label}</div><div class="hint">클릭해서 선택 · 드래그앤드롭 · Ctrl+V 붙여넣기</div><button class="mini choose">사진 선택</button>`;
+  }
+
+  async function renderSlot(el){
+    const slot=el.dataset.slot; const blob=await getImg(slot);
+    if(blob){ const url=URL.createObjectURL(blob); el.innerHTML=baseSlotHTML(slot,true,url); }
+    else el.innerHTML=baseSlotHTML(slot,false);
+    bindSlot(el);
+  }
+
+  let guardedPending=null, guardedConfirmed=false;
+  function bindSlot(el){
+    const slot=el.dataset.slot;
+    const choose=()=>{
+      if(el.classList.contains('guarded') && !guardedConfirmed){ guardedPending=el; document.getElementById('breakfastConfirm').classList.add('show'); return; }
+      const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*'; inp.onchange=()=>inp.files[0]&&handleFile(el,inp.files[0]); inp.click();
+    };
+    el.onclick=e=>{
+      if(e.target.matches('[data-zoom]')) return zoom(e.target.src);
+      if(e.target.classList.contains('remove')) return removeSlot(el);
+      if(e.target.classList.contains('replace')||e.target.classList.contains('choose')) return choose();
+      if(!el.querySelector('img')) choose();
+    };
+    el.ondragover=e=>{e.preventDefault();el.classList.add('drag')};
+    el.ondragleave=()=>el.classList.remove('drag');
+    el.ondrop=e=>{e.preventDefault();el.classList.remove('drag'); const f=[...e.dataTransfer.files].find(f=>f.type.startsWith('image/')); if(f) handleFile(el,f);};
+    el.tabIndex=0;
+    el.onpaste=e=>{const f=[...e.clipboardData.files].find(f=>f.type.startsWith('image/')); if(f){e.preventDefault();handleFile(el,f)}};
+  }
+
+  async function handleFile(el,file){
+    await putImg(el.dataset.slot,file); await renderSlot(el); if(el.dataset.slot==='sales1') renderSalesRef(); save();
+  }
+  async function removeSlot(el){
+    await delImg(el.dataset.slot); await renderSlot(el); if(el.dataset.slot==='sales1') renderSalesRef(); save();
+  }
+  document.getElementById('bfNo').onclick=()=>document.getElementById('breakfastConfirm').classList.remove('show');
+  document.getElementById('bfYes').onclick=()=>{guardedConfirmed=true;document.getElementById('breakfastConfirm').classList.remove('show'); const el=guardedPending; guardedPending=null; el&&el.querySelector('.choose')?.click();};
+
+  function zoom(src){ const m=document.getElementById('imgModal'); m.querySelector('img').src=src; m.classList.add('show');}
+  document.getElementById('modalClose').onclick=()=>document.getElementById('imgModal').classList.remove('show');
+  document.getElementById('imgModal').onclick=e=>{if(e.target.id==='imgModal')e.currentTarget.classList.remove('show')};
+
+  async function hydrateSlots(){ for(const el of document.querySelectorAll('.slot:not([data-slot^="reg"])')) await renderSlot(el); renderSalesRef(); }
+
+  async function renderSalesRef(){
+    const blob=await getImg('sales1'); const box=document.getElementById('salesRef');
+    if(!blob){box.innerHTML='<strong>① 사진 참고:</strong> 매출 사진을 올리면 여기에 미리보기가 표시됩니다.';return;}
+    const url=URL.createObjectURL(blob); box.innerHTML=`<strong>① 매출 사진</strong><br><img src="${url}" style="max-width:100%;max-height:360px;margin-top:8px;border-radius:12px;cursor:zoom-in" id="salesRefImg">`;
+    document.getElementById('salesRefImg').onclick=e=>zoom(e.target.src);
+  }
+
+  function money(v){ const n=String(v||'').replace(/[^\d-]/g,''); return n===''?'0':Number(n).toLocaleString('ko-KR'); }
+  const salesInputs=[...document.querySelectorAll('#salesFields input')];
+  salesInputs.forEach(i=>{ i.value=state.sales[i.dataset.k]??''; i.oninput=()=>{state.sales[i.dataset.k]=i.value.replace(/[^\d]/g,'');renderSalesText();save();};});
+  function renderSalesText(){
+    const s=state.sales;
+    document.getElementById('salesText').textContent=
+`${shortDate(now)} 레스토랑 일매출 
+
+현금: ${money(s.cash)}원
+카드: ${money(s.card)}원
+서비스 : ${money(s.service)}원 .
+순매출: ${money(s.net)}원
+총매출: ${money(s.total)}원
+
+현 시재금 : ${money(s.cashOnHand)}원
+현 포스기 현금잔액 : ${money(s.posCash)}원
+${now.getMonth()+1}월 누적현금 : ${money(s.monthCash)}원
+계좌입금 : ${money(s.deposit)}`;
+  }
+  renderSalesText();
+
+  const dailyInputs=[...document.querySelectorAll('#dailyFields input')];
+  dailyInputs.forEach(i=>{i.value=state.daily[i.dataset.k]??'';i.oninput=()=>{state.daily[i.dataset.k]=i.value.replace(/[^\d]/g,'');renderDailyText();save();};});
+  function renderDailyText(){
+    const d=state.daily;
+    document.getElementById('dailyText').textContent=
+`${compactDate(now)}
+
+총투숙팀 ${d.stay||0}팀
+연박팀 ${d.long||0}팀
+신규입실팀 ${d.new||0}팀
+체크인 ${d.in||0}팀
+체크인전 ${d.before||0}팀
+
+주차 ${d.parking||0}대`;
+    const all=['stay','long','new','in','before'].every(k=>String(d[k]??'')!=='');
+    const chk=document.getElementById('dailyCheck');
+    if(!all){chk.textContent='';return}
+    const a=Number(d.long)+Number(d.new)===Number(d.stay);
+    const b=Number(d.in)+Number(d.before)===Number(d.new);
+    chk.className=(a&&b)?'okmsg':'error';
+    chk.textContent=(a&&b)?'✓ 팀 수 계산이 맞습니다.':'⚠ 숫자를 다시 확인해주세요. (연박+신규=총투숙 / 체크인+체크인전=신규입실)';
+  }
+  renderDailyText();
+
+  document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{await navigator.clipboard.writeText(document.getElementById(b.dataset.copy).textContent); const t=b.textContent;b.textContent='복사 완료 ✓';setTimeout(()=>b.textContent=t,1200)});
+
+  function renderReg(){
+    const wrap=document.getElementById('regList'); wrap.innerHTML='';
+    for(let i=1;i<=state.regCount;i++){
+      const el=document.createElement('div'); el.className='slot'; el.dataset.slot=`reg${i}`; wrap.appendChild(el); renderSlot(el);
+    }
+  }
+  document.getElementById('addReg').onclick=()=>{state.regCount++;save();renderReg();};
+
+  async function stepDone(step){
+    if(step===1)return await hasImg('sales1');
+    if(step===2)return ['cash','card','service','net','total','cashOnHand','posCash','monthCash','deposit'].every(k=>String(state.sales[k]??'')!=='');
+    if(step===3)return (await hasImg('reserveToday'))&&(await hasImg('reserveTomorrow'));
+    if(step===4)return await hasImg('roomTomorrow');
+    if(step===5)return await hasImg('breakfast');
+    if(step===6)return await hasImg('onsite');
+    if(step===7){for(let i=1;i<=state.regCount;i++) if(await hasImg(`reg${i}`)) return true; return false;}
+    if(step===8)return (await hasImg('air1'))&&(await hasImg('air2'));
+    if(step===9)return await hasImg('hermes');
+    if(step===10)return await hasImg('backoffice');
+    if(step===11)return ['stay','long','new','in','before','parking'].every(k=>String(state.daily[k]??'')!=='');
+    if(step===12)return await hasImg('openlog');
+  }
+  async function updateProgress(){
+    if(!db)return; let done=0;
+    for(let i=1;i<=12;i++){
+      const ok=await stepDone(i); if(ok)done++;
+      const card=document.querySelector(`[data-step="${i}"]`); const st=card.querySelector('.status');
+      st.textContent=ok?'완료 ✓':'미완료'; st.classList.toggle('done',ok);
+    }
+    document.getElementById('progressText').textContent=`${done} / 12 완료`;
+    document.getElementById('progressBar').style.width=`${done/12*100}%`;
+  }
+
+  async function reportImg(slot,title){
+    const blob=await getImg(slot); if(!blob)return '';
+    const url=URL.createObjectURL(blob); return `<div class="report-card"><h3>${title}</h3><img src="${url}" alt="${title}" data-zoom-report></div>`;
+  }
+  document.getElementById('makeReport').onclick=async()=>{
+    let out='';
+    out+=await reportImg('sales1','① 매출 올리기 (토유 레스토랑)');
+    out+=`<div class="report-card"><h3>② 현금 매출 TEXT</h3><div class="report-text" id="rSales">${document.getElementById('salesText').textContent}</div><div class="row-actions"><button class="btn soft" onclick="navigator.clipboard.writeText(document.getElementById('rSales').textContent)">TEXT 복사</button></div></div>`;
+    out+=await reportImg('reserveToday',`③ 오늘 ${shortDate(now)} 일일 예약시트`);
+    out+=await reportImg('reserveTomorrow',`③ 내일 ${shortDate(tomorrow)} 일일 예약시트`);
+    out+=await reportImg('roomTomorrow','④ 객실현황 — 내일자');
+    out+=await reportImg('breakfast','⑤ 조식리스트');
+    out+=await reportImg('onsite','⑥ 현장결제표');
+    for(let i=1;i<=state.regCount;i++) out+=await reportImg(`reg${i}`,`⑦ 레지카드 ${i}`);
+    out+=await reportImg('air1','⑧ 에어컨 가동 현황 ①'); out+=await reportImg('air2','⑧ 에어컨 가동 현황 ②');
+    out+=await reportImg('hermes','⑨ 에르메스 객실관리');
+    out+=await reportImg('backoffice','⑩ 백오피스 설비 / 주방 에어컨');
+    out+=`<div class="report-card"><h3>⑪ 당일 현황 TEXT</h3><div class="report-text" id="rDaily">${document.getElementById('dailyText').textContent}</div><div class="row-actions"><button class="btn soft" onclick="navigator.clipboard.writeText(document.getElementById('rDaily').textContent)">TEXT 복사</button></div></div>`;
+    out+=await reportImg('openlog','⑫ 오픈 일지 올리기');
+    document.getElementById('reportBody').innerHTML=out||'<div class="report-card">아직 입력된 자료가 없습니다.</div>';
+    document.getElementById('report').classList.add('show');
+    document.querySelectorAll('[data-zoom-report]').forEach(img=>img.onclick=e=>zoom(e.target.src));
+    document.getElementById('report').scrollIntoView({behavior:'smooth'});
+  };
+  document.getElementById('closeReport').onclick=()=>document.getElementById('report').classList.remove('show');
+
+  function updateHistory(){
+    const keys=Object.keys(localStorage).filter(k=>k.startsWith('toyu_state_')).sort().reverse();
+    const panel=document.getElementById('historyPanel');
+    panel.innerHTML=`<div class="card"><div class="card-head"><div><div class="title">날짜별 저장 기록</div><div class="desc">입력 내용은 날짜별 자동 저장됩니다.</div></div></div><div class="body">${keys.map(k=>{const d=k.replace('toyu_state_','');return `<div class="history-item"><span>${d}</span><span>${d===dateKey?'오늘':'저장됨'}</span></div>`}).join('')||'저장 기록 없음'}</div></div>`;
+  }
+  document.getElementById('toggleHistory').onclick=()=>document.getElementById('historyPanel').classList.toggle('show');
+  updateHistory();
+
+  document.getElementById('resetToday').onclick=async()=>{
+    if(!confirm('오늘 입력한 TEXT와 사진을 모두 초기화할까요?'))return;
+    localStorage.removeItem(stateKey);
+    if(db){
+      const tx=db.transaction('images','readwrite'), store=tx.objectStore('images');
+      const req=store.openCursor();
+      req.onsuccess=e=>{const c=e.target.result;if(c){if(String(c.key).startsWith(dateKey+':'))c.delete();c.continue();}};
+      tx.oncomplete=()=>location.reload();
+    } else location.reload();
+  };
+
+  save();
+})();
+</script>
+</body>
+</html>

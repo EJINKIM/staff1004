@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>토유 오픈·마감 보고 도우미</title>
+<title>오픈·마감 보고 도우미</title>
 <style>
   :root{
     --bg:#f5f7fb; --card:#fff; --text:#172033; --muted:#6b7280; --line:#e5e7eb;
@@ -86,6 +86,7 @@
     .report{display:block!important}.report-card{box-shadow:none;break-inside:avoid}
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
 <div class="app">
@@ -93,7 +94,7 @@
     <div class="hero-inner">
       <div class="hero-top">
         <div>
-          <h1>토유 오픈·마감 보고 도우미</h1>
+          <h1>오픈·마감 도우미</h1>
           <div class="sub" id="todayLabel"></div>
         </div>
         <div class="progress-wrap">
@@ -121,13 +122,21 @@
     </section>
 
     <section class="card" data-step="2">
-      <div class="card-head"><div><div class="title">② 현금 매출 TEXT 입력</div><div class="desc">① 사진을 보면서 숫자만 입력</div></div><span class="status">미완료</span></div>
+      <div class="card-head"><div><div class="title">② 현금 매출 TEXT 입력</div><div class="desc">① 영수증 사진을 자동으로 읽고, 이상한 값은 직접 수정</div></div><span class="status">미완료</span></div>
       <div class="body">
         <div id="salesRef" class="notice"><strong>① 사진 참고:</strong> 매출 사진을 올리면 여기에 미리보기가 표시됩니다.</div>
+        <div class="row-actions" style="margin:0 0 12px">
+          <button class="btn soft" id="ocrSalesBtn">영수증 자동읽기</button>
+          <span id="ocrStatus" class="desc" style="align-self:center"></span>
+        </div>
+        <div class="notice" style="background:#f8fafc;border-color:#dbe3ef">
+          자동으로 우선 채우는 항목: <strong>현금매출 · 카드매출 · 할인+서비스 · 순매출</strong><br>
+          자동인식 결과는 아래 입력칸에서 언제든 직접 수정할 수 있습니다.
+        </div>
         <div class="fields" id="salesFields">
-          <label class="field">현금<input inputmode="numeric" data-k="cash" placeholder="140000"></label>
-          <label class="field">카드<input inputmode="numeric" data-k="card" placeholder="426000"></label>
-          <label class="field">서비스<input inputmode="numeric" data-k="service" placeholder="33000"></label>
+          <label class="field">현금매출<input inputmode="numeric" data-k="cash" placeholder="140000"></label>
+          <label class="field">카드매출<input inputmode="numeric" data-k="card" placeholder="426000"></label>
+          <label class="field">할인+서비스<input inputmode="numeric" data-k="service" placeholder="33000"></label>
           <label class="field">순매출<input inputmode="numeric" data-k="net" placeholder="566000"></label>
           <label class="field">총매출<input inputmode="numeric" data-k="total" placeholder="599000"></label>
           <label class="field">현 시재금<input inputmode="numeric" data-k="cashOnHand" placeholder="200000"></label>
@@ -343,7 +352,12 @@
   }
 
   async function handleFile(el,file){
-    await putImg(el.dataset.slot,file); await renderSlot(el); if(el.dataset.slot==='sales1') renderSalesRef(); save();
+    await putImg(el.dataset.slot,file); await renderSlot(el);
+    if(el.dataset.slot==='sales1'){
+      renderSalesRef();
+      setTimeout(()=>runSalesOCR(true), 250);
+    }
+    save();
   }
   async function removeSlot(el){
     await delImg(el.dataset.slot); await renderSlot(el); if(el.dataset.slot==='sales1') renderSalesRef(); save();
@@ -367,6 +381,93 @@
   function money(v){ const n=String(v||'').replace(/[^\d-]/g,''); return n===''?'0':Number(n).toLocaleString('ko-KR'); }
   const salesInputs=[...document.querySelectorAll('#salesFields input')];
   salesInputs.forEach(i=>{ i.value=state.sales[i.dataset.k]??''; i.oninput=()=>{state.sales[i.dataset.k]=i.value.replace(/[^\d]/g,'');renderSalesText();save();};});
+
+  function normalizeOcrText(t){
+    return (t||'')
+      .replace(/[₩￦]/g,'W')
+      .replace(/\s+/g,' ')
+      .replace(/O(?=\d)|(?<=\d)O/g,'0');
+  }
+
+  function parseMoneyNearLabel(text, labels){
+    const cleaned = normalizeOcrText(text);
+    for(const label of labels){
+      const esc = label.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      const patterns = [
+        new RegExp(esc + String.raw`[^0-9]{0,25}([0-9][0-9,\.]{1,15})`, 'i'),
+        new RegExp(String.raw`([0-9][0-9,\.]{1,15})[^가-힣A-Za-z0-9]{0,12}` + esc, 'i')
+      ];
+      for(const p of patterns){
+        const m = cleaned.match(p);
+        if(m){
+          const n = (m[1]||'').replace(/[^\d]/g,'');
+          if(n) return n;
+        }
+      }
+    }
+    return '';
+  }
+
+  function fillIfFound(key, value){
+    if(!value) return false;
+    state.sales[key]=value;
+    const input=document.querySelector(`#salesFields input[data-k="${key}"]`);
+    if(input) input.value=value;
+    return true;
+  }
+
+  async function runSalesOCR(auto=false){
+    const btn=document.getElementById('ocrSalesBtn');
+    const status=document.getElementById('ocrStatus');
+    const blob=await getImg('sales1');
+    if(!blob){
+      if(!auto) alert('①에 영수증 사진을 먼저 올려주세요.');
+      return;
+    }
+    if(!window.Tesseract){
+      status.textContent='자동읽기 모듈을 불러오지 못했습니다. 인터넷 연결을 확인해주세요.';
+      return;
+    }
+    btn.disabled=true;
+    btn.textContent='읽는 중…';
+    status.textContent='영수증 글자를 분석하고 있습니다.';
+    try{
+      const result=await Tesseract.recognize(blob,'kor+eng',{
+        logger:m=>{
+          if(m.status==='recognizing text' && m.progress){
+            status.textContent=`영수증 분석 중 ${Math.round(m.progress*100)}%`;
+          }
+        }
+      });
+      const text=result?.data?.text||'';
+
+      const cash = parseMoneyNearLabel(text, ['현금매출','현금 매출','현금']);
+      const card = parseMoneyNearLabel(text, ['카드매출','카드 매출','카드']);
+      const discountService = parseMoneyNearLabel(text, ['할인+서비스','할인 + 서비스','서비스','할인']);
+      const net = parseMoneyNearLabel(text, ['순매출','순 매출']);
+
+      let count=0;
+      count += fillIfFound('cash', cash) ? 1 : 0;
+      count += fillIfFound('card', card) ? 1 : 0;
+      count += fillIfFound('service', discountService) ? 1 : 0;
+      count += fillIfFound('net', net) ? 1 : 0;
+
+      renderSalesText();
+      save();
+      status.textContent=count
+        ? `자동입력 ${count}/4개 완료 · 아래 숫자를 확인하고 틀린 부분만 수정하세요.`
+        : '자동인식된 금액이 없습니다. 사진을 더 선명하게 찍거나 직접 입력해주세요.';
+    }catch(err){
+      console.error(err);
+      status.textContent='자동읽기에 실패했습니다. 사진을 다시 올리거나 직접 입력해주세요.';
+    }finally{
+      btn.disabled=false;
+      btn.textContent='영수증 다시 읽기';
+    }
+  }
+
+  document.getElementById('ocrSalesBtn').onclick=()=>runSalesOCR(false);
+
   function renderSalesText(){
     const s=state.sales;
     document.getElementById('salesText').textContent=

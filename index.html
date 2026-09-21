@@ -3,88 +3,174 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>오픈·마감 보고 도우미</title>
+<title>(AM) 중간마감 도우미</title>
 <style>
   :root{
-    --bg:#f5f7fb; --card:#fff; --text:#172033; --muted:#6b7280; --line:#e5e7eb;
-    --accent:#3558e6; --accent-soft:#eef2ff; --ok:#16845b; --warn:#b86a00; --danger:#b42318;
-    --shadow:0 10px 30px rgba(23,32,51,.08); --radius:20px;
+    --bg:#f7f6f9;
+    --surface:#ffffff;
+    --surface-2:#fbfafc;
+    --text:#292733;
+    --muted:#817d89;
+    --line:#e9e5ec;
+    --line-strong:#ddd7e2;
+    --purple:#7c68c8;
+    --purple-soft:#eeeafb;
+    --pink:#d9799f;
+    --pink-soft:#faeaf0;
+    --blue:#5f8fca;
+    --blue-soft:#eaf2fb;
+    --yellow:#c49a3e;
+    --yellow-soft:#faf3df;
+    --ok:#6f5bb8;
+    --danger:#bd5c72;
+    --shadow:0 10px 30px rgba(39,34,47,.055);
+    --shadow-lg:0 18px 50px rgba(39,34,47,.09);
+    --radius:18px;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,"Noto Sans KR",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.01em}
   button,input{font:inherit}
-  .app{max-width:1180px;margin:0 auto;padding:20px 16px 80px}
-  .hero{position:sticky;top:0;z-index:20;background:rgba(245,247,251,.93);backdrop-filter:blur(14px);padding:10px 0 14px}
-  .hero-inner{background:linear-gradient(135deg,#172033,#31476f);color:white;border-radius:24px;padding:18px 20px;box-shadow:var(--shadow)}
-  .hero-top{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
-  h1{font-size:22px;margin:0 0 4px}.sub{opacity:.78;font-size:13px}
-  .progress-wrap{min-width:220px;flex:1;max-width:380px}
-  .progress-head{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}
-  .progress{height:9px;background:rgba(255,255,255,.18);border-radius:999px;overflow:hidden}
-  .progress > i{display:block;height:100%;width:0;background:#fff;border-radius:999px;transition:.25s}
-  .top-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-  .btn{border:0;border-radius:12px;padding:10px 13px;font-weight:700;cursor:pointer}
-  .btn.primary{background:white;color:#172033}.btn.ghost{background:rgba(255,255,255,.12);color:#fff}
-  .btn.soft{background:var(--accent-soft);color:#3047bd}.btn.danger{background:#fff0ee;color:var(--danger)}
-  .grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-  .card-head{padding:18px 18px 12px;display:flex;gap:12px;align-items:center;justify-content:space-between}
-  .title{font-weight:900;font-size:18px}.desc{color:var(--muted);font-size:13px;margin-top:4px}
-  .status{font-size:12px;padding:7px 10px;border-radius:999px;background:#f3f4f6;color:#6b7280;white-space:nowrap}
-  .status.done{background:#eaf8f2;color:var(--ok);font-weight:800}
-  .body{padding:0 18px 18px}
-  .notice{background:#fff8e8;border:1px solid #f5d79a;border-radius:14px;padding:12px 13px;font-size:13px;line-height:1.6;margin-bottom:12px}
-  .notice strong{color:#805300}
-  .steps{margin:0;padding-left:20px;font-size:13px;line-height:1.8}
-  .upload-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  .slot{border:1.5px dashed #cbd5e1;background:#fafbfc;border-radius:16px;min-height:170px;padding:10px;display:flex;flex-direction:column;gap:8px;justify-content:center;align-items:center;position:relative}
-  .slot.drag{border-color:var(--accent);background:var(--accent-soft)}
-  .slot img{max-width:100%;max-height:280px;border-radius:12px;object-fit:contain;cursor:zoom-in;background:#fff}
-  .slot .label{font-size:13px;font-weight:800;text-align:center}
-  .slot .hint{font-size:11px;color:var(--muted);text-align:center}
+  button{touch-action:manipulation}
+  .app{max-width:1160px;margin:0 auto;padding:18px 16px 96px}
+
+  /* 상단 */
+  .hero{position:sticky;top:0;z-index:30;padding:8px 0 12px;background:rgba(247,246,249,.90);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .hero-inner{background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:22px;padding:17px 19px;box-shadow:var(--shadow)}
+  .hero-top{display:flex;gap:18px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+  h1{font-size:22px;line-height:1.2;margin:0 0 5px;font-weight:900;letter-spacing:-.035em}
+  .sub{color:var(--muted);font-size:12px}
+  .progress-wrap{min-width:220px;flex:1;max-width:360px}
+  .progress-head{display:flex;justify-content:space-between;gap:12px;font-size:11px;color:var(--muted);margin-bottom:8px}
+  .progress-head strong{color:var(--text);font-size:12px}
+  .progress{height:7px;background:#efedf1;border-radius:999px;overflow:hidden}
+  .progress>i{display:block;height:100%;width:0;background:var(--purple);border-radius:999px;transition:width .28s ease}
+  .top-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+  .btn{border:1px solid var(--line);border-radius:11px;padding:9px 12px;font-size:12px;font-weight:800;cursor:pointer;background:#fff;color:#514d58;transition:.16s ease}
+  .btn:hover{border-color:var(--line-strong);background:#faf9fb}
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:#302d37;color:#fff;border-color:#302d37}
+  .btn.ghost{background:#fff;color:#615c67}
+  .btn.soft{background:var(--purple-soft);border-color:#e1dbf5;color:#6754af}
+  .btn.danger{background:#fff6f7;border-color:#f1d9df;color:var(--danger)}
+
+  /* 기본 작업 카드 */
+  .grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:15px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:118px}
+  .card-head{padding:17px 18px 14px;display:flex;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid #f1eef3;background:#fff}
+  .title{font-weight:900;font-size:17px;letter-spacing:-.025em}
+  .desc{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.5}
+  .status{font-size:11px;padding:6px 9px;border-radius:999px;background:#f3f1f4;color:#8a858e;white-space:nowrap;font-weight:800}
+  .status.done{background:var(--purple-soft);color:#6654ac}
+  .body{padding:16px 18px 18px}
+  .notice{background:#fbfafc;border:1px solid var(--line);border-left:3px solid #d5b768;border-radius:12px;padding:11px 12px;font-size:12px;line-height:1.65;margin-bottom:12px;color:#5d5862}
+  .notice strong{color:#4c4750}
+  .steps{margin:0;padding-left:18px;font-size:12px;line-height:1.8}
+  .upload-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .slot{border:1px dashed #d8d3dc;background:#fcfbfd;border-radius:14px;min-height:155px;padding:11px;display:flex;flex-direction:column;gap:8px;justify-content:center;align-items:center;position:relative;transition:.16s}
+  .slot:hover{border-color:#bdb4c9;background:#faf8fc}
+  .slot.drag{border-color:var(--purple);background:var(--purple-soft)}
+  .slot img{max-width:100%;max-height:280px;border-radius:10px;object-fit:contain;cursor:zoom-in;background:#fff}
+  .slot .label{font-size:12px;font-weight:850;text-align:center}
+  .slot .hint{font-size:10px;color:var(--muted);text-align:center;line-height:1.5}
   .slot-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-  .mini{border:0;border-radius:10px;padding:7px 9px;font-size:12px;font-weight:700;cursor:pointer;background:#eef2f7;color:#334155}
-  .mini.danger{background:#fff0ee;color:var(--danger)}
-  .fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-  label.field{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted)}
-  .field input{border:1px solid #d8dee8;border-radius:12px;padding:11px 12px;background:#fff;color:var(--text);outline:none}
-  .field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(53,88,230,.10)}
-  .text-output{margin-top:12px;background:#111827;color:#f9fafb;border-radius:16px;padding:14px;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;line-height:1.7;min-height:140px}
-  .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .mini{border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-size:11px;font-weight:800;cursor:pointer;background:#fff;color:#5c5762}
+  .mini.danger{background:#fff7f8;color:var(--danger);border-color:#f2dfe3}
+  .fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+  label.field{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--muted)}
+  .field input{border:1px solid var(--line-strong);border-radius:10px;padding:10px 11px;background:#fff;color:var(--text);outline:none;transition:.15s}
+  .field input:focus{border-color:#9c8bd4;box-shadow:0 0 0 3px rgba(124,104,200,.09)}
+  .daily-guide{margin-bottom:12px;background:#faf9fb;border:1px solid var(--line);border-radius:13px;padding:12px 13px;font-size:11px;line-height:1.65;color:#68626d}
+  .daily-guide strong{color:#49444e}
+  .daily-field{background:#fbfafc;border:1px solid var(--line);border-radius:13px;padding:11px 12px;gap:6px!important}
+  .daily-field .field-title{font-size:12px;font-weight:900;color:#403b45}
+  .daily-field .field-note{font-size:10px;line-height:1.45;color:#938d97;font-weight:650;min-height:29px}
+  .daily-field input{background:#fff;font-weight:800;font-size:14px}
+  .text-output{margin-top:12px;background:#302d37;color:#f9f7fb;border-radius:13px;padding:14px;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;line-height:1.72;min-height:130px;box-shadow:none}
+  .row-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
   .checklist{display:grid;gap:8px;margin:4px 0 14px}
-  .checkline{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.55}
-  .checkline input{margin-top:4px}
-  .reg-list{display:grid;gap:12px}
-  .adder{margin-top:10px}
-  .error{color:var(--danger);font-size:12px;font-weight:700;margin-top:8px}
-  .okmsg{color:var(--ok);font-size:12px;font-weight:700;margin-top:8px}
-  .history{margin-top:14px;display:none}
-  .history.show{display:block}
-  .history-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
-  .report{display:none;margin-top:18px}
-  .report.show{display:block}
-  .report-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
-  .report-card h3{margin:0 0 10px;font-size:16px}
-  .report-card img{max-width:100%;display:block;margin:8px auto;border-radius:12px;border:1px solid var(--line)}
-  .report-text{white-space:pre-wrap;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;line-height:1.7}
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;z-index:100;align-items:center;justify-content:center;padding:20px}
-  .modal.show{display:flex}.modal img{max-width:96vw;max-height:90vh;object-fit:contain;border-radius:14px;background:#fff}
+  .checkline{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.55}
+  .checkline input{margin-top:3px}
+  .reg-list{display:grid;gap:10px}.adder{margin-top:10px}
+  .error{color:var(--danger);font-size:11px;font-weight:800;margin-top:8px}.okmsg{color:#627f71;font-size:11px;font-weight:800;margin-top:8px}
+  .history{margin-top:12px;display:none}.history.show{display:block}
+  .history-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:12px}
+
+  /* 최종 보고 */
+  .report{display:none;margin-top:18px}.report.show{display:block}
+  .report-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:11px;box-shadow:var(--shadow)}
+  .report-card h3{margin:0 0 10px;font-size:15px}.report-card img{max-width:100%;display:block;margin:8px auto;border-radius:10px;border:1px solid var(--line)}
+  .report-text{white-space:pre-wrap;background:#faf9fb;border:1px solid var(--line);border-radius:11px;padding:12px;font-size:12px;line-height:1.7}
+
+  /* 이미지 모달 */
+  .modal{position:fixed;inset:0;background:rgba(28,25,31,.78);display:none;z-index:100;align-items:center;justify-content:center;padding:20px}
+  .modal.show{display:flex}.modal img{max-width:96vw;max-height:90vh;object-fit:contain;border-radius:12px;background:#fff}
   .modal button{position:absolute;top:18px;right:18px;border:0;border-radius:999px;width:40px;height:40px;font-size:20px;cursor:pointer}
-  .confirm{position:fixed;inset:0;background:rgba(17,24,39,.55);display:none;z-index:90;align-items:center;justify-content:center;padding:18px}
-  .confirm.show{display:flex}
-  .confirm-box{background:white;border-radius:20px;max-width:440px;width:100%;padding:20px;box-shadow:var(--shadow)}
-  .confirm-box h3{margin:0 0 8px}.confirm-box p{color:var(--muted);font-size:14px;line-height:1.6}
-  .confirm-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+  .confirm{position:fixed;inset:0;background:rgba(35,31,39,.46);display:none;z-index:90;align-items:center;justify-content:center;padding:18px}
+  .confirm.show{display:flex}.confirm-box{background:#fff;border:1px solid var(--line);border-radius:18px;max-width:440px;width:100%;padding:20px;box-shadow:var(--shadow-lg)}
+  .confirm-box h3{margin:0 0 8px}.confirm-box p{color:var(--muted);font-size:13px;line-height:1.6}.confirm-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+
+  /* 전송 체크보드 — 색은 완료 전엔 아주 작게, 완료할 때만 크게 */
+  .send-board{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+  .send-board-head{padding:19px 20px 13px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .send-board-title{display:flex;gap:12px;align-items:center}
+  .send-board-icon{width:42px;height:42px;border-radius:13px;background:#302d37;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:950;letter-spacing:.05em}
+  .send-board-title h2{margin:0;font-size:18px;letter-spacing:-.03em}.send-board-title p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
+  .send-stats{display:flex;gap:6px;flex-wrap:wrap}
+  .send-stat{border:1px solid var(--line);border-radius:999px;padding:7px 10px;background:#fff;color:#847f89;font-size:11px;font-weight:800}
+  .send-stat strong{color:#3e3944}.send-stat.ok{background:var(--purple-soft);border-color:#e3ddf4;color:#6554a9}.send-stat.left{background:var(--yellow-soft);border-color:#efe2bb;color:#9b7934}
+  .send-overview{padding:0 20px 15px}.send-progress{height:5px;border-radius:999px;background:#efedf1;overflow:hidden}.send-progress i{display:block;height:100%;width:0;background:var(--purple);border-radius:999px;transition:.28s}
+  .send-groups{display:grid;gap:17px;padding:3px 20px 20px}
+  .send-group{padding:0;border:0;background:transparent}
+  .send-group-title{display:flex;align-items:center;gap:8px;margin:0 1px 9px;font-size:11px;font-weight:900;color:#79737e;letter-spacing:.01em}
+  .send-group-title::before{content:'';width:5px;height:5px;border-radius:50%;background:#b8b1bd}
+  .send-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+  .send-item{--soft:var(--pink-soft);--strong:var(--pink);border:1px solid var(--line);border-top:3px solid var(--strong);background:#fff;border-radius:15px;padding:10px;min-height:137px;display:flex;flex-direction:column;gap:8px;transition:background .2s,border-color .2s,color .2s,transform .16s,box-shadow .2s;position:relative;overflow:hidden;box-shadow:0 5px 16px rgba(39,34,47,.035)}
+  .send-item.palette-pink{--soft:var(--pink-soft);--strong:var(--pink)}
+  .send-item.palette-purple{--soft:var(--purple-soft);--strong:var(--purple)}
+  .send-item.palette-blue{--soft:var(--blue-soft);--strong:var(--blue)}
+  .send-item.palette-yellow{--soft:var(--yellow-soft);--strong:var(--yellow)}
+  .send-item:hover{box-shadow:0 9px 22px rgba(39,34,47,.065);transform:translateY(-1px)}
+  .send-item.sent{background:var(--strong);border-color:var(--strong);color:#fff;box-shadow:0 12px 28px color-mix(in srgb,var(--strong) 25%,transparent);transform:translateY(-1px)}
+  .send-item.sent.palette-yellow{color:#2d271a}
+  .send-item.sent::after{content:'✓';position:absolute;right:9px;bottom:2px;font-size:56px;line-height:1;font-weight:950;color:rgba(255,255,255,.14);pointer-events:none}
+  .send-item.sent.palette-yellow::after{color:rgba(63,49,19,.10)}
+  .send-main-toggle{width:100%;flex:1;border:0;background:transparent;color:#3f3a45;padding:2px;text-align:left;cursor:pointer;display:flex;align-items:flex-start;gap:9px;border-radius:10px;position:relative;z-index:2}
+  .send-main-toggle:active{transform:scale(.987)}
+  .send-num{width:30px;height:30px;flex:0 0 30px;border-radius:9px;background:var(--soft);color:var(--strong);display:grid;place-items:center;font-size:11px;font-weight:950}
+  .send-name{font-size:14px;font-weight:900;line-height:1.35;word-break:keep-all;letter-spacing:-.025em;padding-top:2px}
+  .send-sub{margin-top:6px;font-size:10px;color:#918b95;font-weight:750}.send-sub.ready{color:#6c5aad}.send-sub.notready{color:#9a895c}
+  .send-complete-label{display:none;margin-top:5px;font-size:10px;font-weight:850;color:rgba(255,255,255,.85)}
+  .send-item.sent .send-main-toggle,.send-item.sent .send-name,.send-item.sent .send-sub{color:inherit}.send-item.sent .send-num{background:rgba(255,255,255,.92);color:var(--strong)}
+  .send-item.sent.palette-yellow .send-num{background:rgba(255,255,255,.75)}
+  .send-item.sent .send-complete-label{display:block;color:inherit;opacity:.78}
+  .send-item-actions{display:flex;gap:6px;flex-wrap:wrap;position:relative;z-index:3}
+  .send-go,.send-copy{border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-size:10px;font-weight:850;cursor:pointer;background:#fff;color:#655f6a}
+  .send-copy{background:var(--soft);border-color:transparent;color:#5f536b}
+  .send-item.sent .send-go,.send-item.sent .send-copy{background:rgba(255,255,255,.93);border-color:rgba(255,255,255,.5);color:#514a56}
+  .send-guide{padding:0 20px 19px;color:#938d98;font-size:10px;line-height:1.6}.send-guide b{color:#5f5964}
+
+  /* 따라다니는 목차 / 맨위 */
+  .float-tools{position:fixed;right:16px;bottom:18px;z-index:70;display:flex;flex-direction:column;gap:7px;align-items:flex-end}
+  .float-btn{border:1px solid var(--line-strong);border-radius:999px;padding:10px 13px;font-size:11px;font-weight:900;cursor:pointer;color:#504a56;background:rgba(255,255,255,.96);box-shadow:0 8px 22px rgba(39,34,47,.11);backdrop-filter:blur(10px)}
+  .float-btn.toc{background:#302d37;color:#fff;border-color:#302d37}.float-btn.top{background:#fff}
+  .toc-panel{position:fixed;right:16px;bottom:106px;z-index:69;width:min(350px,calc(100vw - 24px));max-height:min(70vh,640px);overflow:auto;background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-lg);padding:13px;display:none;backdrop-filter:blur(16px)}
+  .toc-panel.show{display:block;animation:tocPop .16s ease-out}@keyframes tocPop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .toc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:1px 2px 9px}.toc-head strong{font-size:14px}.toc-close{border:1px solid var(--line);background:#fff;color:#766f7b;width:30px;height:30px;border-radius:999px;font-size:16px;cursor:pointer}
+  .toc-group{margin:7px 0 12px}.toc-label{font-size:10px;font-weight:900;color:#9a949e;margin:0 5px 5px;text-transform:none}
+  .toc-list{display:grid;gap:5px}.toc-link{border:1px solid transparent;text-align:left;padding:9px 10px;border-radius:10px;background:#faf9fb;color:#524d57;font-size:11px;font-weight:800;cursor:pointer}.toc-link:hover{background:#f4f1f7;border-color:var(--line)}
+  #work-reserve-today,#work-reserve-tomorrow{scroll-margin-top:130px}
+
   @media (max-width:760px){
-    .upload-grid,.fields{grid-template-columns:1fr}
-    .hero{position:static}
-    .slot{min-height:150px}
-    .app{padding:12px 10px 60px}
+    .app{padding:10px 9px 78px}.hero{padding:6px 0 9px}.hero-inner{border-radius:17px;padding:14px}
+    h1{font-size:20px}.progress-wrap{max-width:none;width:100%}.top-actions{gap:6px}.btn{padding:8px 10px}
+    .upload-grid,.fields{grid-template-columns:1fr}.slot{min-height:142px}.body{padding:14px}.card-head{padding:15px 14px 12px}.title{font-size:15px}
+    .send-board{border-radius:17px}.send-board-head{padding:15px 13px 11px}.send-board-icon{width:38px;height:38px;border-radius:11px}.send-board-title h2{font-size:16px}
+    .send-overview{padding:0 13px 12px}.send-groups{padding:2px 13px 15px;gap:15px}.send-grid{grid-template-columns:1fr 1fr;gap:7px}.send-item{min-height:130px;padding:9px}.send-name{font-size:12px}.send-guide{padding:0 13px 15px}
+    .float-tools{right:9px;bottom:10px}.toc-panel{right:9px;bottom:98px}.float-btn{padding:9px 12px}
   }
-  @media print{
-    body{background:#fff}.hero,.grid,#historyPanel,.report .row-actions{display:none!important}
-    .report{display:block!important}.report-card{box-shadow:none;break-inside:avoid}
-  }
+  @media (max-width:460px){.send-grid{grid-template-columns:1fr}.send-item{min-height:116px}.send-name{font-size:13px}}
+  @media print{body{background:#fff}.hero,.grid,#historyPanel,.report .row-actions,.float-tools,.toc-panel,.send-board{display:none!important}.report{display:block!important}.report-card{box-shadow:none;break-inside:avoid}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
@@ -94,11 +180,11 @@
     <div class="hero-inner">
       <div class="hero-top">
         <div>
-          <h1>오픈·마감 도우미</h1>
+          <h1>(AM) 중간마감 도우미</h1>
           <div class="sub" id="todayLabel"></div>
         </div>
         <div class="progress-wrap">
-          <div class="progress-head"><span>진행률</span><strong id="progressText">0 / 12 완료</strong></div>
+          <div class="progress-head"><span>자료 준비 진행률</span><strong id="progressText">0 / 12 완료</strong></div>
           <div class="progress"><i id="progressBar"></i></div>
         </div>
       </div>
@@ -111,18 +197,39 @@
     </div>
   </div>
 
+
+  <section class="send-board" id="sendBoard">
+    <div class="send-board-head">
+      <div class="send-board-title">
+        <div class="send-board-icon">AM</div>
+        <div>
+          <h2>중간마감 전송 체크</h2>
+          <p>카톡 전송이 끝난 항목의 제목을 누르면 완료 상태로 바뀝니다.</p>
+        </div>
+      </div>
+      <div class="send-stats">
+        <span class="send-stat">전체 <strong id="sendTotal">13</strong></span>
+        <span class="send-stat ok">전송완료 <strong id="sendDone">0</strong></span>
+        <span class="send-stat left">남음 <strong id="sendLeft">13</strong></span>
+      </div>
+    </div>
+    <div class="send-overview"><div class="send-progress"><i id="sendProgressBar"></i></div></div>
+    <div class="send-groups" id="sendGrid"></div>
+    <div class="send-guide"><b>사용법</b> · 카톡으로 보낸 뒤 <b>큰 제목 카드 자체를 탭</b>하세요. 완료된 항목은 컬러가 선명하게 바뀌고 오늘 날짜에 저장됩니다. 예약시트는 아래의 「카톡 문구 복사」도 함께 사용할 수 있어요.</div>
+  </section>
+
   <div class="history" id="historyPanel"></div>
 
   <div class="grid">
-    <section class="card" data-step="1">
-      <div class="card-head"><div><div class="title">① 매출 올리기 (토유 레스토랑)</div><div class="desc">매출 화면 사진 1장</div></div><span class="status">미완료</span></div>
+    <section class="card" data-step="1" id="work-sales-receipt">
+      <div class="card-head"><div><div class="title">① 레스토랑 영수증(마감)</div><div class="desc">매출 화면 사진 1장</div></div><span class="status">미완료</span></div>
       <div class="body">
         <div class="upload-grid"><div class="slot" data-slot="sales1"></div></div>
       </div>
     </section>
 
-    <section class="card" data-step="2">
-      <div class="card-head"><div><div class="title">② 현금 매출 TEXT 입력</div><div class="desc">① 영수증 사진을 자동으로 읽고, 이상한 값은 직접 수정</div></div><span class="status">미완료</span></div>
+    <section class="card" data-step="2" id="work-sales-text">
+      <div class="card-head"><div><div class="title">② 레스토랑 현금 매출 TEXT</div><div class="desc">① 영수증 사진을 자동으로 읽고, 이상한 값은 직접 수정</div></div><span class="status">미완료</span></div>
       <div class="body">
         <div id="salesRef" class="notice"><strong>① 사진 참고:</strong> 매출 사진을 올리면 여기에 미리보기가 표시됩니다.</div>
         <div class="row-actions" style="margin:0 0 12px">
@@ -149,8 +256,8 @@
       </div>
     </section>
 
-    <section class="card" data-step="3">
-      <div class="card-head"><div><div class="title">③ 일일 예약시트</div><div class="desc">검토 후 오늘자·내일자 완성 시트 각각 캡처</div></div><span class="status">미완료</span></div>
+    <section class="card" data-step="3" id="work-reservations">
+      <div class="card-head"><div><div class="title">③·④ 일일예약시트 (오늘 / 내일)</div><div class="desc">검토 후 오늘자·내일자 완성 시트 각각 캡처</div></div><span class="status">미완료</span></div>
       <div class="body">
         <div class="notice"><strong>⚠ 캡처 전 필수 확인</strong>
           <ol class="steps">
@@ -161,40 +268,63 @@
           </ol>
         </div>
         <div class="upload-grid">
-          <div class="slot" data-slot="reserveToday"></div>
-          <div class="slot" data-slot="reserveTomorrow"></div>
+          <div class="slot" data-slot="reserveToday" id="work-reserve-today"></div>
+          <div class="slot" data-slot="reserveTomorrow" id="work-reserve-tomorrow"></div>
         </div>
       </div>
     </section>
 
-    <section class="card" data-step="4">
-      <div class="card-head"><div><div class="title">④ 객실현황 — 내일자</div><div class="desc">내일 객실현황 화면 1장</div></div><span class="status">미완료</span></div>
+    <section class="card" data-step="4" id="work-room-tomorrow">
+      <div class="card-head"><div><div class="title">⑤ 객실현황(내일)</div><div class="desc">내일 객실현황 화면 1장</div></div><span class="status">미완료</span></div>
       <div class="body"><div class="upload-grid"><div class="slot" data-slot="roomTomorrow"></div></div></div>
     </section>
 
-    <section class="card" data-step="5">
-      <div class="card-head"><div><div class="title">⑤ 조식리스트</div><div class="desc">네이버 스마트플레이스 예약 확인 후 최종 캡처</div></div><span class="status">미완료</span></div>
+    <section class="card" data-step="5" id="work-breakfast">
+      <div class="card-head"><div><div class="title">⑥ 조식리스트</div><div class="desc">네이버 스마트플레이스 예약 확인 후 최종 캡처</div></div><span class="status">미완료</span></div>
       <div class="body">
         <div class="notice"><strong>업로드 전 확인:</strong> 네이버 스마트플레이스 예약이 있으면 조식리스트 하단 <strong>프런트란</strong>에 먼저 작성합니다.</div>
         <div class="upload-grid"><div class="slot guarded" data-slot="breakfast"></div></div>
       </div>
     </section>
 
-    <section class="card" data-step="6">
-      <div class="card-head"><div><div class="title">⑥ 현장결제표</div><div class="desc">최종 화면 캡처 1장</div></div><span class="status">미완료</span></div>
+    <section class="card" data-step="6" id="work-onsite">
+      <div class="card-head"><div><div class="title">⑦ 현장결제표</div><div class="desc">최종 화면 캡처 1장</div></div><span class="status">미완료</span></div>
       <div class="body"><div class="upload-grid"><div class="slot" data-slot="onsite"></div></div></div>
     </section>
 
-    <section class="card" data-step="7">
-      <div class="card-head"><div><div class="title">⑦ 레지카드</div><div class="desc">개수 제한 없음 · 번호 자동 생성</div></div><span class="status">미완료</span></div>
+    <section class="card" data-step="7" id="work-reg">
+      <div class="card-head"><div><div class="title">⑧ 레지카드</div><div class="desc">개수 제한 없음 · 번호 자동 생성</div></div><span class="status">미완료</span></div>
       <div class="body">
         <div class="reg-list" id="regList"></div>
         <button class="btn soft adder" id="addReg">＋ 레지카드 추가</button>
       </div>
     </section>
 
-    <section class="card" data-step="8">
-      <div class="card-head"><div><div class="title">⑧ 에어컨 가동 현황</div><div class="desc">체크인 전 객실만 제습 · 24℃ 설정 후 사진 2장</div></div><span class="status">미완료</span></div>
+    <section class="card" data-step="11" id="work-daily-text">
+      <div class="card-head"><div><div class="title">⑨ 오늘 투숙 객실 현황 TEXT</div><div class="desc">숫자만 입력하면 고정 양식 자동 생성</div></div><span class="status">미완료</span></div>
+      <div class="body">
+        <div class="daily-guide">
+          <strong>입력 기준</strong> · 숫자는 현재 시점 기준으로 입력하세요.<br>
+          총투숙팀 = 연박팀 + 신규입실팀 / 신규입실팀 = 체크인 + 체크인전<br>
+          <strong>공실은 확인·기록용으로 입력하지만, 복사되는 카톡 TEXT에는 포함되지 않습니다.</strong>
+        </div>
+        <div class="fields" id="dailyFields">
+          <label class="field daily-field"><span class="field-title">총투숙팀</span><span class="field-note">오늘 총 투숙할 팀 수 · 연박 포함</span><input inputmode="numeric" data-k="stay" placeholder="0"></label>
+          <label class="field daily-field"><span class="field-title">연박팀</span><span class="field-note">어제부터 이어서 투숙 중인 팀</span><input inputmode="numeric" data-k="long" placeholder="0"></label>
+          <label class="field daily-field"><span class="field-title">신규입실팀</span><span class="field-note">오늘 새로 입실할 팀 · 체크인전 + 체크인</span><input inputmode="numeric" data-k="new" placeholder="0"></label>
+          <label class="field daily-field"><span class="field-title">체크인</span><span class="field-note">현재 체크인을 완료한 신규 입실팀</span><input inputmode="numeric" data-k="in" placeholder="0"></label>
+          <label class="field daily-field"><span class="field-title">체크인전</span><span class="field-note">현재 아직 체크인하지 않은 신규 입실팀</span><input inputmode="numeric" data-k="before" placeholder="0"></label>
+          <label class="field daily-field"><span class="field-title">공실</span><span class="field-note">오늘 판매되지 않은 빈 객실 수 · 복사 TEXT에서는 제외</span><input inputmode="numeric" data-k="vacancy" placeholder="0"></label>
+          <label class="field daily-field"><span class="field-title">주차</span><span class="field-note">현재 입실 고객 중 차량번호가 등록된 차량 수</span><input inputmode="numeric" data-k="parking" placeholder="0"></label>
+        </div>
+        <div id="dailyCheck"></div>
+        <div class="text-output" id="dailyText"></div>
+        <div class="row-actions"><button class="btn soft" data-copy="dailyText">TEXT 복사</button></div>
+      </div>
+    </section>
+
+    <section class="card" data-step="8" id="work-air">
+      <div class="card-head"><div><div class="title">⑩ 에어컨 가동 현황</div><div class="desc">체크인 전 객실만 제습 · 24℃ 설정 후 사진 2장</div></div><span class="status">미완료</span></div>
       <div class="body">
         <div class="notice"><strong>⚠ 체크인 전 객실만 설정</strong><br>
           카드키 등으로 체크인 여부 재확인 → <strong>제습 모드 · 24℃</strong><br>
@@ -207,8 +337,8 @@
       </div>
     </section>
 
-    <section class="card" data-step="9">
-      <div class="card-head"><div><div class="title">⑨ 에르메스 객실관리</div><div class="desc">미체크인 객실 퇴실 처리 + 온돌 AUTO OFF</div></div><span class="status">미완료</span></div>
+    <section class="card" data-step="9" id="work-hermes">
+      <div class="card-head"><div><div class="title">⑪ 에르메스 객실관리</div><div class="desc">미체크인 객실 퇴실 처리 + 온돌 AUTO OFF</div></div><span class="status">미완료</span></div>
       <div class="body">
         <div class="notice">
           <strong>① 미체크인 객실 퇴실 처리</strong><br>
@@ -222,8 +352,8 @@
       </div>
     </section>
 
-    <section class="card" data-step="10">
-      <div class="card-head"><div><div class="title">⑩ 백오피스 설비 / 주방 에어컨</div><div class="desc">운영 상황에 맞게 정비 후 전체 상태 캡처</div></div><span class="status">미완료</span></div>
+    <section class="card" data-step="10" id="work-backoffice">
+      <div class="card-head"><div><div class="title">⑫ 백오피스 설비 / 주방에어컨</div><div class="desc">운영 상황에 맞게 정비 후 전체 상태 캡처</div></div><span class="status">미완료</span></div>
       <div class="body">
         <div class="notice">
           <strong>중간보고 약 16:00</strong> → 101·102 제습기 <strong>ON 유지</strong><br>
@@ -235,25 +365,8 @@
       </div>
     </section>
 
-    <section class="card" data-step="11">
-      <div class="card-head"><div><div class="title">⑪ 당일 현황 TEXT</div><div class="desc">숫자만 입력하면 고정 양식 자동 생성</div></div><span class="status">미완료</span></div>
-      <div class="body">
-        <div class="fields" id="dailyFields">
-          <label class="field">총투숙팀<input inputmode="numeric" data-k="stay" placeholder="13"></label>
-          <label class="field">연박팀<input inputmode="numeric" data-k="long" placeholder="3"></label>
-          <label class="field">신규입실팀<input inputmode="numeric" data-k="new" placeholder="10"></label>
-          <label class="field">체크인<input inputmode="numeric" data-k="in" placeholder="9"></label>
-          <label class="field">체크인전<input inputmode="numeric" data-k="before" placeholder="1"></label>
-          <label class="field">주차<input inputmode="numeric" data-k="parking" placeholder="6"></label>
-        </div>
-        <div id="dailyCheck"></div>
-        <div class="text-output" id="dailyText"></div>
-        <div class="row-actions"><button class="btn soft" data-copy="dailyText">TEXT 복사</button></div>
-      </div>
-    </section>
-
-    <section class="card" data-step="12">
-      <div class="card-head"><div><div class="title">⑫ 오픈 일지 올리기</div><div class="desc">오픈 일지 화면 캡처 1장</div></div><span class="status">미완료</span></div>
+    <section class="card" data-step="12" id="work-openlog">
+      <div class="card-head"><div><div class="title">⑬ 오픈일지</div><div class="desc">오픈 일지 화면 캡처 1장</div></div><span class="status">미완료</span></div>
       <div class="body"><div class="upload-grid"><div class="slot" data-slot="openlog"></div></div></div>
     </section>
   </div>
@@ -269,6 +382,16 @@
     </div>
     <div id="reportBody"></div>
   </section>
+</div>
+
+
+<div class="float-tools" aria-label="빠른 이동">
+  <button class="float-btn toc" id="tocToggle" type="button">☰ 목차</button>
+  <button class="float-btn top" id="goTop" type="button">↑ 맨위로</button>
+</div>
+<div class="toc-panel" id="tocPanel">
+  <div class="toc-head"><strong>중간마감 목차</strong><button class="toc-close" id="tocClose" type="button">×</button></div>
+  <div id="tocBody"></div>
 </div>
 
 <div class="modal" id="imgModal"><button id="modalClose">×</button><img alt="확대 이미지"></div>
@@ -298,19 +421,127 @@
 
   const stateKey=`toyu_state_${dateKey}`;
   let state=JSON.parse(localStorage.getItem(stateKey)||'{}');
-  state.sales=state.sales||{}; state.daily=state.daily||{}; state.regCount=state.regCount||1;
-  const save=()=>{ localStorage.setItem(stateKey,JSON.stringify(state)); updateProgress(); updateHistory(); };
+  state.sales=state.sales||{}; state.daily=state.daily||{}; state.regCount=state.regCount||1; state.sent=state.sent||{};
+  const save=()=>{ localStorage.setItem(stateKey,JSON.stringify(state)); updateProgress(); updateHistory(); updateSendBoard(); };
 
   // IndexedDB image store
   let db;
   const dbReq=indexedDB.open('toyu_report_db',1);
   dbReq.onupgradeneeded=e=>{ e.target.result.createObjectStore('images'); };
-  dbReq.onsuccess=e=>{ db=e.target.result; hydrateSlots(); renderReg(); updateProgress(); };
+  dbReq.onsuccess=e=>{ db=e.target.result; hydrateSlots(); renderReg(); updateProgress(); updateSendBoard(); };
   const imgKey=slot=>`${dateKey}:${slot}`;
   const putImg=(slot,blob)=>new Promise((res,rej)=>{const tx=db.transaction('images','readwrite');tx.objectStore('images').put(blob,imgKey(slot));tx.oncomplete=res;tx.onerror=rej;});
   const getImg=slot=>new Promise(res=>{if(!db)return res(null);const r=db.transaction('images').objectStore('images').get(imgKey(slot));r.onsuccess=()=>res(r.result||null);r.onerror=()=>res(null);});
   const delImg=slot=>new Promise(res=>{const tx=db.transaction('images','readwrite');tx.objectStore('images').delete(imgKey(slot));tx.oncomplete=res;});
   const hasImg=slot=>getImg(slot).then(Boolean);
+
+
+  const reserveTodayCopy=`${now.getMonth()+1}월${now.getDate()}일 일일예약시트입니다.`;
+  const reserveTomorrowCopy=`${tomorrow.getMonth()+1}월${tomorrow.getDate()}일 일일예약시트입니다.`;
+
+  const sendItems=[
+    {group:'레스토랑', id:'salesImg', name:'레스토랑 영수증(마감)', target:'#work-sales-receipt', ready:()=>hasImg('sales1'), palette:'pink'},
+    {group:'레스토랑', id:'salesText', name:'레스토랑 현금 매출 TEXT', target:'#work-sales-text', ready:async()=>['cash','card','service','net','total','cashOnHand','posCash','monthCash','deposit'].every(k=>String(state.sales[k]??'')!==''), palette:'purple'},
+    {group:'일일예약시트', id:'reserveToday', name:'일일 예약시트 (오늘)', target:'#work-reserve-today', ready:()=>hasImg('reserveToday'), palette:'blue', copy:reserveTodayCopy},
+    {group:'일일예약시트', id:'reserveTomorrow', name:'일일예약시트 (내일)', target:'#work-reserve-tomorrow', ready:()=>hasImg('reserveTomorrow'), palette:'pink', copy:reserveTomorrowCopy},
+    {group:'일일예약시트', id:'roomTomorrow', name:'객실현황(내일)', target:'#work-room-tomorrow', ready:()=>hasImg('roomTomorrow'), palette:'yellow'},
+    {group:'조식리스트 + 현장결제표', id:'breakfast', name:'조식리스트', target:'#work-breakfast', ready:()=>hasImg('breakfast'), palette:'purple'},
+    {group:'조식리스트 + 현장결제표', id:'onsite', name:'현장결제표', target:'#work-onsite', ready:()=>hasImg('onsite'), palette:'blue'},
+    {group:'레지카드', id:'reg', name:'레지카드', target:'#work-reg', ready:async()=>{for(let i=1;i<=state.regCount;i++)if(await hasImg(`reg${i}`))return true;return false;}, palette:'pink'},
+    {group:'당일 현황', id:'dailyText', name:'오늘 투숙 객실 현황 TEXT', target:'#work-daily-text', ready:async()=>['stay','long','new','in','before','vacancy','parking'].every(k=>String(state.daily[k]??'')!==''), palette:'yellow'},
+    {group:'시설 관리', id:'air', name:'에어컨 가동 현황', target:'#work-air', ready:async()=>(await hasImg('air1'))&&(await hasImg('air2')), palette:'blue'},
+    {group:'시설 관리', id:'hermes', name:'에르메스 객실관리', target:'#work-hermes', ready:()=>hasImg('hermes'), palette:'purple'},
+    {group:'시설 관리', id:'backoffice', name:'백오피스 설비/ 주방에어컨', target:'#work-backoffice', ready:()=>hasImg('backoffice'), palette:'yellow'},
+    {group:'오픈일지', id:'openlog', name:'오픈일지', target:'#work-openlog', ready:()=>hasImg('openlog'), palette:'pink'}
+  ];
+
+  const groupOrder=['레스토랑','일일예약시트','조식리스트 + 현장결제표','레지카드','당일 현황','시설 관리','오픈일지'];
+  let sendRenderToken=0;
+  async function updateSendBoard(){
+    const wrap=document.getElementById('sendGrid');
+    if(!wrap) return;
+    const token=++sendRenderToken;
+    const readyStates=[];
+    for(const item of sendItems){
+      try{ readyStates.push(await item.ready()); }catch(e){ readyStates.push(false); }
+    }
+    if(token!==sendRenderToken) return;
+
+    const done=sendItems.filter(x=>!!state.sent[x.id]).length;
+    document.getElementById('sendTotal').textContent=sendItems.length;
+    document.getElementById('sendDone').textContent=done;
+    document.getElementById('sendLeft').textContent=sendItems.length-done;
+    document.getElementById('sendProgressBar').style.width=`${done/sendItems.length*100}%`;
+
+    let globalIndex=0;
+    wrap.innerHTML=groupOrder.map(group=>{
+      const items=sendItems.filter(x=>x.group===group);
+      const cards=items.map(item=>{
+        const idx=sendItems.indexOf(item);
+        const number=idx+1;
+        const sent=!!state.sent[item.id], ready=!!readyStates[idx];
+        return `<div class="send-item palette-${item.palette} ${sent?'sent':''}" data-send-id="${item.id}">
+          <button type="button" class="send-main-toggle" data-toggle-send="${item.id}" title="${sent?'전송완료 취소':'전송완료로 체크'}">
+            <span class="send-num">${number}</span>
+            <span>
+              <span class="send-name">${item.name}</span>
+              <span class="send-sub ${ready?'ready':'notready'}">${ready?'자료 준비됨 ✓':'자료 준비 전'}</span>
+              <span class="send-complete-label">전송완료 ✓ · 다시 누르면 취소</span>
+            </span>
+          </button>
+          <div class="send-item-actions">
+            <button type="button" class="send-go" data-target="${item.target}">작업보기</button>
+            ${item.copy?`<button type="button" class="send-copy" data-copy-text="${item.copy}">카톡 문구 복사</button>`:''}
+          </div>
+        </div>`;
+      }).join('');
+      return `<section class="send-group"><div class="send-group-title">${group}</div><div class="send-grid">${cards}</div></section>`;
+    }).join('');
+
+    wrap.querySelectorAll('[data-target]').forEach(btn=>btn.onclick=e=>{
+      e.stopPropagation();
+      const target=document.querySelector(btn.dataset.target);
+      if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+    wrap.querySelectorAll('[data-toggle-send]').forEach(btn=>btn.onclick=e=>{
+      e.stopPropagation();
+      const id=btn.dataset.toggleSend;
+      state.sent[id]=!state.sent[id];
+      if(!state.sent[id]) delete state.sent[id];
+      localStorage.setItem(stateKey,JSON.stringify(state));
+      updateSendBoard();
+      updateHistory();
+    });
+    wrap.querySelectorAll('[data-copy-text]').forEach(btn=>btn.onclick=async e=>{
+      e.stopPropagation();
+      const original=btn.textContent;
+      try{
+        await navigator.clipboard.writeText(btn.dataset.copyText);
+        btn.textContent='복사 완료 ✓';
+      }catch(err){
+        const ta=document.createElement('textarea'); ta.value=btn.dataset.copyText; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); btn.textContent='복사 완료 ✓';
+      }
+      setTimeout(()=>btn.textContent=original,1300);
+    });
+  }
+
+  function buildToc(){
+    const body=document.getElementById('tocBody');
+    if(!body) return;
+    body.innerHTML=groupOrder.map(group=>{
+      const items=sendItems.filter(x=>x.group===group);
+      return `<div class="toc-group"><div class="toc-label">${group}</div><div class="toc-list">${items.map(item=>{const n=sendItems.indexOf(item)+1;return `<button class="toc-link" type="button" data-toc-target="${item.target}">${n}. ${item.name}</button>`}).join('')}</div></div>`;
+    }).join('');
+    body.querySelectorAll('[data-toc-target]').forEach(btn=>btn.onclick=()=>{
+      document.getElementById('tocPanel').classList.remove('show');
+      const target=document.querySelector(btn.dataset.tocTarget);
+      if(target) target.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+  }
+  buildToc();
+  document.getElementById('tocToggle').onclick=()=>document.getElementById('tocPanel').classList.toggle('show');
+  document.getElementById('tocClose').onclick=()=>document.getElementById('tocPanel').classList.remove('show');
+  document.getElementById('goTop').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
 
   const labels={
     sales1:'매출 화면', reserveToday:`오늘 ${shortDate(now)} 예약시트`, reserveTomorrow:`내일 ${shortDate(tomorrow)} 예약시트`,
@@ -500,13 +731,13 @@ ${now.getMonth()+1}월 누적현금 : ${money(s.monthCash)}원
 체크인전 ${d.before||0}팀
 
 주차 ${d.parking||0}대`;
-    const all=['stay','long','new','in','before'].every(k=>String(d[k]??'')!=='');
+    const all=['stay','long','new','in','before','vacancy'].every(k=>String(d[k]??'')!=='');
     const chk=document.getElementById('dailyCheck');
     if(!all){chk.textContent='';return}
     const a=Number(d.long)+Number(d.new)===Number(d.stay);
     const b=Number(d.in)+Number(d.before)===Number(d.new);
     chk.className=(a&&b)?'okmsg':'error';
-    chk.textContent=(a&&b)?'✓ 팀 수 계산이 맞습니다.':'⚠ 숫자를 다시 확인해주세요. (연박+신규=총투숙 / 체크인+체크인전=신규입실)';
+    chk.textContent=(a&&b)?`✓ 팀 수 계산이 맞습니다. · 공실 ${d.vacancy||0}팀은 확인용으로만 저장됩니다.`:'⚠ 숫자를 다시 확인해주세요. (연박+신규입실=총투숙 / 체크인+체크인전=신규입실)';
   }
   renderDailyText();
 
@@ -531,7 +762,7 @@ ${now.getMonth()+1}월 누적현금 : ${money(s.monthCash)}원
     if(step===8)return (await hasImg('air1'))&&(await hasImg('air2'));
     if(step===9)return await hasImg('hermes');
     if(step===10)return await hasImg('backoffice');
-    if(step===11)return ['stay','long','new','in','before','parking'].every(k=>String(state.daily[k]??'')!=='');
+    if(step===11)return ['stay','long','new','in','before','vacancy','parking'].every(k=>String(state.daily[k]??'')!=='');
     if(step===12)return await hasImg('openlog');
   }
   async function updateProgress(){
@@ -543,6 +774,7 @@ ${now.getMonth()+1}월 누적현금 : ${money(s.monthCash)}원
     }
     document.getElementById('progressText').textContent=`${done} / 12 완료`;
     document.getElementById('progressBar').style.width=`${done/12*100}%`;
+    updateSendBoard();
   }
 
   async function reportImg(slot,title){
@@ -551,19 +783,19 @@ ${now.getMonth()+1}월 누적현금 : ${money(s.monthCash)}원
   }
   document.getElementById('makeReport').onclick=async()=>{
     let out='';
-    out+=await reportImg('sales1','① 매출 올리기 (토유 레스토랑)');
-    out+=`<div class="report-card"><h3>② 현금 매출 TEXT</h3><div class="report-text" id="rSales">${document.getElementById('salesText').textContent}</div><div class="row-actions"><button class="btn soft" onclick="navigator.clipboard.writeText(document.getElementById('rSales').textContent)">TEXT 복사</button></div></div>`;
-    out+=await reportImg('reserveToday',`③ 오늘 ${shortDate(now)} 일일 예약시트`);
-    out+=await reportImg('reserveTomorrow',`③ 내일 ${shortDate(tomorrow)} 일일 예약시트`);
-    out+=await reportImg('roomTomorrow','④ 객실현황 — 내일자');
-    out+=await reportImg('breakfast','⑤ 조식리스트');
-    out+=await reportImg('onsite','⑥ 현장결제표');
-    for(let i=1;i<=state.regCount;i++) out+=await reportImg(`reg${i}`,`⑦ 레지카드 ${i}`);
-    out+=await reportImg('air1','⑧ 에어컨 가동 현황 ①'); out+=await reportImg('air2','⑧ 에어컨 가동 현황 ②');
-    out+=await reportImg('hermes','⑨ 에르메스 객실관리');
-    out+=await reportImg('backoffice','⑩ 백오피스 설비 / 주방 에어컨');
-    out+=`<div class="report-card"><h3>⑪ 당일 현황 TEXT</h3><div class="report-text" id="rDaily">${document.getElementById('dailyText').textContent}</div><div class="row-actions"><button class="btn soft" onclick="navigator.clipboard.writeText(document.getElementById('rDaily').textContent)">TEXT 복사</button></div></div>`;
-    out+=await reportImg('openlog','⑫ 오픈 일지 올리기');
+    out+=await reportImg('sales1','① 레스토랑 영수증(마감)');
+    out+=`<div class="report-card"><h3>② 레스토랑 현금 매출 TEXT</h3><div class="report-text" id="rSales">${document.getElementById('salesText').textContent}</div><div class="row-actions"><button class="btn soft" onclick="navigator.clipboard.writeText(document.getElementById('rSales').textContent)">TEXT 복사</button></div></div>`;
+    out+=await reportImg('reserveToday',`③ 오늘 ${shortDate(now)} 일일예약시트`);
+    out+=await reportImg('reserveTomorrow',`④ 내일 ${shortDate(tomorrow)} 일일예약시트`);
+    out+=await reportImg('roomTomorrow','⑤ 객실현황(내일)');
+    out+=await reportImg('breakfast','⑥ 조식리스트');
+    out+=await reportImg('onsite','⑦ 현장결제표');
+    for(let i=1;i<=state.regCount;i++) out+=await reportImg(`reg${i}`,`⑧ 레지카드 ${i}`);
+    out+=`<div class="report-card"><h3>⑨ 오늘 투숙 객실 현황 TEXT</h3><div class="report-text" id="rDaily">${document.getElementById('dailyText').textContent}</div><div class="row-actions"><button class="btn soft" onclick="navigator.clipboard.writeText(document.getElementById('rDaily').textContent)">TEXT 복사</button></div></div>`;
+    out+=await reportImg('air1','⑩ 에어컨 가동 현황 ①'); out+=await reportImg('air2','⑩ 에어컨 가동 현황 ②');
+    out+=await reportImg('hermes','⑪ 에르메스 객실관리');
+    out+=await reportImg('backoffice','⑫ 백오피스 설비 / 주방에어컨');
+    out+=await reportImg('openlog','⑬ 오픈일지');
     document.getElementById('reportBody').innerHTML=out||'<div class="report-card">아직 입력된 자료가 없습니다.</div>';
     document.getElementById('report').classList.add('show');
     document.querySelectorAll('[data-zoom-report]').forEach(img=>img.onclick=e=>zoom(e.target.src));
